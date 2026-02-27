@@ -1,0 +1,76 @@
+---
+name: iOS settings migration tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    # At midnight every day.
+    # Notifications for scheduled workflows are sent to the user who last modified the cron
+    # syntax in the workflow file. If you update this you must have notifications for
+    # Github Actions enabled, so these don't go unnoticed.
+    # https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/notifications-for-workflow-runs
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  TEST_DEVICE_UDID: 00008130-0019181022F3803A
+  OLD_APP_COMMIT_HASH: bb03064164752235e4021ac8d4b8e981611f1303
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      old_commit: ${{ steps.export.outputs.old_commit }}
+    steps:
+      - id: export
+        run: echo "old_commit=${OLD_APP_COMMIT_HASH}" >> "$GITHUB_OUTPUT"
+
+  uninstall-app:
+    name: Uninstall app
+    needs: setup
+    runs-on: [self-hosted, macOS, ios-test]
+    steps:
+      - name: Uninstall app
+        timeout-minutes: 5
+        run: ios-deploy --id ${{ env.TEST_DEVICE_UDID }} --uninstall_only --bundle_id net.mullvad.MullvadVPN
+
+  change-dns-settings:
+    name: Change DNS settings on old app version
+    needs: [setup, uninstall-app]
+    uses: ./.github/workflows/ios-end-to-end-tests.yml
+    with:
+      arg_tests_json_key: "settings-migration-change-dns"
+      commit_hash: ${{ needs.setup.outputs.old_commit }}
+    secrets: inherit
+
+  verify-dns-settings:
+    name: Verify DNS settings still changed on current app version
+    needs: change-dns-settings
+    if: always()
+    uses: ./.github/workflows/ios-end-to-end-tests.yml
+    with:
+      arg_tests_json_key: "settings-migration-verify-dns"
+    secrets: inherit
+
+  change-other-settings:
+    name: Change all other settings on old app version
+    needs: [setup, uninstall-app, verify-dns-settings]
+    if: always()
+    uses: ./.github/workflows/ios-end-to-end-tests.yml
+    with:
+      arg_tests_json_key: "settings-migration-change-vpn"
+      commit_hash: ${{ needs.setup.outputs.old_commit }}
+    secrets: inherit
+
+  verify-other-settings:
+    name: Verify all other settings still changed on current app version
+    needs: change-other-settings
+    if: always()
+    uses: ./.github/workflows/ios-end-to-end-tests.yml
+    with:
+      arg_tests_json_key: "settings-migration-verify-vpn"
+    secrets: inherit

@@ -8,7 +8,7 @@ on:
     # syntax in the workflow file. If you update this you must have notifications for
     # Github Actions enabled, so these don't go unnoticed.
     # https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/notifications-for-workflow-runs
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 permissions: {}
 

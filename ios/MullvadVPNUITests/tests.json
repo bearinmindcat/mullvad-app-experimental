@@ -1,28 +1,37 @@
 {
-    "tests": {
-        "nightly": [
-            "AccountTests",
-            "ConnectivityTests",
-            "CustomListsTests",
-            "LeakTests",
-            "RelayTests",
-            "SettingsTests",
-            "PaymentTests"
-        ],
-        "pr-merge-to-main": [
-            "AccountTests/testLogin",
-            "AccountTests/testCreateAccount",
-            "RelayTests",
-            "PaymentTests"
-        ],
-        "api-tests": [
-            "AccountTests"
-        ],
-        "pr-opened": [
-            "AccountTests/testLogin",
-            "AccountTests/testCreateAccount",
-            "RelayTests",
-            "PaymentTests"
-        ]
-    }
+  "tests": {
+    "nightly": [
+      "AccountTests",
+      "ConnectivityTests",
+      "CustomListsTests",
+      "LeakTests",
+      "RelayTests",
+      "PaymentTests"
+    ],
+    "pr-merge-to-main": [
+      "AccountTests/testLogin",
+      "AccountTests/testCreateAccount",
+      "RelayTests",
+      "PaymentTests"
+    ],
+    "api-tests": ["AccountTests"],
+    "pr-opened": [
+      "AccountTests/testLogin",
+      "AccountTests/testCreateAccount",
+      "RelayTests",
+      "PaymentTests"
+    ],
+    "settings-migration-change-dns": [
+      "SettingsMigrationTests/testChangeCustomDNSSettings"
+    ],
+    "settings-migration-verify-dns": [
+      "SettingsMigrationTests/testVerifyCustomDNSSettingsStillChanged"
+    ],
+    "settings-migration-change-vpn": [
+      "SettingsMigrationTests/testChangeVPNSettings"
+    ],
+    "settings-migration-verify-vpn": [
+      "SettingsMigrationTests/testVerifySettingsStillChanged"
+    ]
+  }
 }
