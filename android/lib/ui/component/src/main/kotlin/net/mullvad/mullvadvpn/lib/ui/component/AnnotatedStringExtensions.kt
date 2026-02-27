@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.core.text.HtmlCompat
 
 /**
  * Appends `text` and styles occurrences of `substring` in `text` with the given `substringStyle`.
@@ -33,37 +34,35 @@ fun AnnotatedString.Builder.appendTextWithStyledSubstring(
 }
 
 fun CharSequence.toAnnotatedString(): AnnotatedString =
-    if (this is Spanned) {
-        buildAnnotatedString {
-            append(this@toAnnotatedString.toString())
-            val spans = getSpans(0, length, Any::class.java)
-
-            spans.forEach { span ->
-                val start = getSpanStart(span)
-                val end = getSpanEnd(span)
-
-                when (span) {
-                    is StyleSpan ->
-                        when (span.style) {
-                            Typeface.BOLD ->
-                                addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
-                            Typeface.ITALIC ->
-                                addStyle(SpanStyle(fontStyle = FontStyle.Italic), start, end)
-                            Typeface.BOLD_ITALIC ->
-                                addStyle(
-                                    SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontStyle = FontStyle.Italic,
-                                    ),
-                                    start,
-                                    end,
-                                )
-                        }
-                    is UnderlineSpan ->
-                        addStyle(SpanStyle(textDecoration = TextDecoration.Underline), start, end)
-                }
-            }
-        }
-    } else {
-        AnnotatedString(this.toString())
+    when (this) {
+        is Spanned -> this.toAnnotatedString()
+        is String ->
+            HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT).toAnnotatedString()
+        else -> AnnotatedString(this.toString())
     }
+
+private fun Spanned.toAnnotatedString() = buildAnnotatedString {
+    append(this@toAnnotatedString.toString())
+    val spans = getSpans(0, length, Any::class.java)
+
+    spans.forEach { span ->
+        val start = getSpanStart(span)
+        val end = getSpanEnd(span)
+
+        when (span) {
+            is StyleSpan ->
+                when (span.style) {
+                    Typeface.BOLD -> addStyle(SpanStyle(fontWeight = FontWeight.Bold), start, end)
+                    Typeface.ITALIC -> addStyle(SpanStyle(fontStyle = FontStyle.Italic), start, end)
+                    Typeface.BOLD_ITALIC ->
+                        addStyle(
+                            SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic),
+                            start,
+                            end,
+                        )
+                }
+            is UnderlineSpan ->
+                addStyle(SpanStyle(textDecoration = TextDecoration.Underline), start, end)
+        }
+    }
+}
