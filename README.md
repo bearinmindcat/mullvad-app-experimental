@@ -1,4 +1,4 @@
-# Mullvad VPN - IP Split Tunneling Fork
+# mullvad-app-experimental
 
 test
 
