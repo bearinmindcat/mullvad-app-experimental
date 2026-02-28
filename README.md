@@ -1,10 +1,6 @@
-# Mullvad VPN desktop and mobile app
+# Mullvad VPN - IP Split Tunneling Fork
 
-Welcome to the Mullvad VPN client app source code repository.
-This is the VPN client software for the Mullvad VPN service.
-For more information about the service, please visit our website,
-[mullvad.net](https://mullvad.net) (Also accessible via Tor on our
-[onion service](http://o54hon2e2vj6c7m3aqqu6uyece65by3vgoxxhlqlsvkmacw6a7m7kiad.onion/)).
+test
 
 This repository contains all the source code for the
 desktop and mobile versions of the app. For desktop this includes the system service/daemon
